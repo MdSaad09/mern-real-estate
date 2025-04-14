@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { signInRequest, signInSuccess, signInFailure } from '../redux/user/userSlice';
 
 const SignIn = () => {
   const [formData, setFormData] = useState({
-    username: '',
     email: '',
     password: ''
   });
-  const [errors, setErrors] = useState(null);
-  const [loading, setLoading] = useState(false);
+
+  const { isLoading, error } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -20,13 +22,10 @@ const SignIn = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setErrors(null);
+    dispatch(signInRequest());
 
-    // Basic validation
     if (!formData.email || !formData.password) {
-      setErrors('All fields are required');
-      setLoading(false);
+      dispatch(signInFailure('All fields are required'));
       return;
     }
 
@@ -42,18 +41,14 @@ const SignIn = () => {
       const data = await res.json();
 
       if (!res.ok || data.success === false) {
-        setErrors(data.message || 'Something went wrong');
-        setLoading(false);
+        dispatch(signInFailure(data.message || 'Something went wrong'));
         return;
       }
 
-      
+      dispatch(signInSuccess(data.user));
       navigate('/');
-    } catch (error) {
-      console.error('Error:', error);
-      setErrors(error.message || 'Server error');
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      dispatch(signInFailure(err.message || 'Server error'));
     }
   };
 
@@ -61,10 +56,7 @@ const SignIn = () => {
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl text-center font-semibold my-7'>Sign In</h1>
       <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
-        <label htmlFor='username' className='sr-only'>Username</label>
-        
 
-        <label htmlFor='email' className='sr-only'>Email</label>
         <input
           type='email'
           placeholder='Email'
@@ -74,7 +66,6 @@ const SignIn = () => {
           value={formData.email}
         />
 
-        <label htmlFor='password' className='sr-only'>Password</label>
         <input
           type='password'
           placeholder='Password'
@@ -85,10 +76,10 @@ const SignIn = () => {
         />
 
         <button
-          disabled={loading}
+          disabled={isLoading}
           className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
         >
-          {loading ? 'Loading...' : 'Sign in'}
+          {isLoading ? 'Loading...' : 'Sign In'}
         </button>
       </form>
 
@@ -99,7 +90,7 @@ const SignIn = () => {
         </Link>
       </div>
 
-      {errors && <p className='text-red-500 mt-5'>{errors}</p>}
+      {error && <p className='text-red-500 mt-5'>{error}</p>}
     </div>
   );
 };
