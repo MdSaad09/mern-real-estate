@@ -29,7 +29,13 @@ function OAuth() {
                 })
             });
             const data = await res.json();
-            dispatch(signInSuccess(data.user));
+            console.log('data:', data);
+            if (!res.ok || data.success === false) {
+                console.log(data.message || 'Something went wrong');
+                return;
+            }
+            // Assuming the response contains user data 
+            dispatch(signInSuccess(data));
             navigate('/');
         } catch (error) {
             console.log("could not sign in with google",error);  
