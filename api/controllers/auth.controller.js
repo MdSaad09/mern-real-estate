@@ -48,3 +48,63 @@ export const signin = async (req, res, next) => {
       next(error);
     }
   };
+
+// GOOGLE AUTH CONTROLLER
+export const googleAuth = async (req, res, next) => {
+  try {
+    const { email, name, photo } = req.body;
+
+    if (!email || !name || !photo) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    let user = await User.findOne({ email });
+
+    if (user) {
+      const token = jwt.sign({ id: user._id }, "abcd1234");
+      const { password, ...rest } = user._doc;
+      return res
+        .cookie('access_token', token, {
+          httpOnly: true,
+          sameSite: 'Strict',
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        })
+        .status(200)
+        .json(rest);
+    }
+
+    const generatedPassword =
+      Math.random().toString(36).slice(-8) +
+      Math.random().toString(36).slice(-8);
+    const hashedPassword = bcrypt.hashSync(generatedPassword, 10);
+    const username =
+      name.split(' ').join('').toLowerCase() +
+      Math.random().toString(36).slice(-4);
+
+    const newUser = new User({
+      username,
+      email,
+      password: hashedPassword,
+      avatar: photo,
+    });
+
+    await newUser.save();
+
+    const token = jwt.sign({ id: newUser._id },"abcd1234");
+    const { password, ...rest } = newUser._doc;
+
+    res
+      .cookie('access_token', token, {
+        httpOnly: true,
+      
+        sameSite: 'Strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
+      .status(200)
+      .json(rest);
+  } catch (error) {
+    console.error('❌ Google Auth Error:', error);
+    next(error);
+  }
+};
+
