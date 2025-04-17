@@ -2,6 +2,7 @@ import React from 'react'
 import { FaSearch } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { FaUserCircle } from 'react-icons/fa'
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -32,11 +33,7 @@ export default function Header() {
           <Link to='/about'><li className='hidden sm:inline text-slate-700 hover:underline'>About</li></Link>
           {currentUser ? (
   <Link to='/profile'>
-    <img
-      src={currentUser.avatar}
-      alt='profile'
-      className='rounded-full h-8 w-8 object-cover'
-    />
+    <FaUserCircle className='text-slate-700 hover:underline' size={25} />
   </Link>
 ) : (
   <Link to='/signin'>

@@ -37,7 +37,7 @@ export const signin = async (req, res, next) => {
       if (!validUser) return next(errorHandler(404, 'User not found!'));
       const validPassword = bcrypt.compareSync(password, validUser.password);
       if (!validPassword) return next(errorHandler(401, 'Wrong credentials!'));
-      const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET || 'fallback-secret'
+      const token = jwt.sign({ id: validUser._id }, "abcd1234" || 'fallback-secret'
       );
       const { password: pass, ...rest } = validUser._doc;
       res
@@ -52,9 +52,9 @@ export const signin = async (req, res, next) => {
 // GOOGLE AUTH CONTROLLER
 export const googleAuth = async (req, res, next) => {
   try {
-    const { email, name, photo } = req.body;
+    const { email, name } = req.body;
 
-    if (!email || !name || !photo) {
+    if (!email || !name) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -85,7 +85,7 @@ export const googleAuth = async (req, res, next) => {
       username,
       email,
       password: hashedPassword,
-      avatar: photo,
+      
     });
 
     await newUser.save();
