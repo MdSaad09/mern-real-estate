@@ -11,8 +11,7 @@ export const test = (req, res) => {
 
 export const updateUserInfo = async (req, res, next) => {
   try {
-    console.log("Token user ID:", req.user?.id);
-    console.log("Param ID:", req.params?.id);
+    
 
     if (req.user.id.toString() !== req.params.id.toString()) {
       return next(errorHandler(403, 'Forbidden'));
@@ -39,6 +38,24 @@ export const updateUserInfo = async (req, res, next) => {
     const { password, ...rest } = updatedUser._doc;
     return res.status(200).json(rest);
 
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const deleteUser = async (req, res, next) => {
+  try {
+    if (req.user.id.toString()  !== req.params.id.toString()) {
+      return next(errorHandler(403, 'You are not allowed to delete this account'));
+    }
+
+    const deletedUser = await User.findByIdAndDelete(req.params.id);
+
+    if (!deletedUser) {
+      return next(errorHandler(404, 'User not found'));
+    }
+    res.clearCookie('access_token');
+    return res.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
     return next(error);
   }
