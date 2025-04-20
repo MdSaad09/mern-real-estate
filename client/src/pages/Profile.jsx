@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure, signOutUserStart, signOutUserSuccess, signOutUserFailure } from '../redux/user/userSlice.js';
+import { Link } from 'react-router-dom';
+
 const Profile = () => {
   const { currentUser, isLoading,  error } = useSelector((state) => state.user);
   const [formData, setFormData] = useState({});
@@ -92,6 +94,7 @@ const Profile = () => {
         <button disabled={isLoading}  className='bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80'>
           {isLoading ? 'Loading...' : 'Update'} 
           </button>
+          <Link to={"/create-listing"} className='bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95'> Create Listing</Link>
       </form>
       {message.text && (
         <div 

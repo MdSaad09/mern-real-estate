@@ -7,6 +7,7 @@ import About from './pages/About'
 import SignUp from './pages/SignUp'
 import Header from './components/Header'
 import PrivateRoute from './components/PrivateRoute'
+import CreateLisitng from './pages/CreateLisitng'
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
         <Route path="/about" element={<About />} />
         <Route  element={<PrivateRoute />} >
         <Route path="/profile" element={<Profile />} />
+        <Route path="/create-listing" element={<CreateLisitng />} />
         </Route>
         <Route path="*" element={<h1 className='text-center text-3xl'>404 Not Found</h1>} />
         
