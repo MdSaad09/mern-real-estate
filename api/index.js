@@ -5,7 +5,16 @@ import userRoute from './routes/user.route.js';
 import authRoute from './routes/auth.route.js';
 import cookieParser from 'cookie-parser';
 import listingRoute from './routes/listing.route.js';
+import uploadRoute from './routes/upload.route.js';
+
+import path from 'path';
+
+import { fileURLToPath } from 'url';
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 const app = express();
 mongoose.connect('mongodb://localhost:27017/mern-estate').then(() => {
@@ -23,6 +32,13 @@ app.use(cookieParser());
 app.use('/api/user', userRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/listing', listingRoute);
+
+// Serve static files from the "uploads" directory
+console.log('Serving static files from:', path.join(__dirname, 'uploads'));
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/api', uploadRoute);
+
 
 // Error handling middleware
 // This middleware should be defined after all routes
